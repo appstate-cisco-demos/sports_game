@@ -47,7 +47,6 @@ let timeShotTaken = 0;
 function simulateGame() {
   if (quarter > 4) {
     console.log('Game over!');
-    rl.close();
     return;
   }
 
