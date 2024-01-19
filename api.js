@@ -33,8 +33,8 @@ const teams = {
 };
 
 const probabilities = {
-  twoPointer: 0.25,  // Probability of making a 2-pointer
-  threePointer: 0.15,  // Probability of making a 3-pointer during a possession
+  twoPointer: 0.35,  // Probability of making a 2-pointer
+  threePointer: 0.25,  // Probability of making a 3-pointer during a possession
   foul: 0.1,  // Probability of a regular foul
   shootingFoul: 0.05,  // Probability of a shooting foul
   threeFreeThrows: 0.02,  // Probability of getting 3 free throws
@@ -45,15 +45,15 @@ let quarter = 1;
 let timeShotTaken = 0;
 
 function simulateGame() {
-  if (quarter > 4) {
-    console.log('Game over!');
-    return;
-  }
 
   if (gameTime <= 0) {
     // Quarter break
     gameTime = 12 * 60; // Reset game time to 12 minutes
     console.log(`End of Quarter ${quarter}`);
+    if (quarter == 4) {
+      console.log('Game over!');
+      return;
+    }
     quarter++;
   }
 
@@ -61,7 +61,7 @@ function simulateGame() {
   const team = Math.random() < 0.5 ? 'home' : 'away';
 
   // Update the game clock
-  if (timeShotTaken === 0) {
+  if (timeShotTaken <= 0) {
     const timeInterval = Math.floor(Math.random() * 21) + 4; // Random time between 4 and 24 seconds
     timeShotTaken = gameTime - timeInterval;
   }
@@ -69,12 +69,12 @@ function simulateGame() {
   // Calculate the outcome of a possession
   if (timeShotTaken === gameTime) {
     const possessionOutcome = Math.random();
-    if (possessionOutcome < probabilities.twoPointer) {
-        teams[team].score += 2;
-        console.log(`${teams[team].name} made a 2-pointer during the possession!`);
-    } else if (possessionOutcome < probabilities.twoPointer + probabilities.threePointer) {
+    if (possessionOutcome < probabilities.threePointer) {
         teams[team].score += 3;
         console.log(`${teams[team].name} made a 3-pointer during the possession!`);
+    } else if (possessionOutcome < probabilities.twoPointer) {
+        teams[team].score += 2;
+        console.log(`${teams[team].name} made a 2-pointer during the possession!`);
     } else {
         console.log(`${teams[team].name} missed the shot during the possession.`);
     }
@@ -96,9 +96,11 @@ function simulateGame() {
   }
 
   // Update scores and time
-  gameTime -= 1;
+  gameTime--;
+  let timeString = `${Math.floor(gameTime / 60)}:${gameTime % 60 >= 10 ? gameTime % 60 : "0" + (gameTime % 60)}`
+
   console.log(`Score: ${teams.home.name} ${teams.home.score} - ${teams.away.name} ${teams.away.score}`);
-  console.log(`Quarter ${quarter}, Game Time: ${Math.floor(gameTime / 60)}:${gameTime % 60 >= 10 ? gameTime % 60 : "0" + gameTime % 60}`);
+  console.log(`Quarter ${quarter}, Game Time: ${timeString}`);
 
       data = {
         score: {
@@ -111,13 +113,11 @@ function simulateGame() {
             points: teams.away.score,
           },
         },
-        time: `${Math.floor(gameTime / 60)}:${
-          gameTime % 60 >= 10 ? gameTime % 60 : "0" + (gameTime % 60)
-        }`,
-        quarter: 1,
+        time: timeString,
+        quarter: quarter,
       };
 
-  setTimeout(simulateGame, 1000);
+  setTimeout(simulateGame, 100);
 }
 
 simulateGame();
