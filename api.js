@@ -2,26 +2,134 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 
+let players = {
+  home: [
+    {
+      name: 'Home Player 1',
+      points: 0,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      '3pa': 0,
+      '3pm': 0, 
+    },
+    {
+      name: 'Home Player 2',
+      points: 0,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      '3pa': 0,
+      '3pm': 0, 
+    },
+    {
+      name: 'Home Player 3',
+      points: 0,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      '3pa': 0,
+      '3pm': 0, 
+    },
+    {
+      name: 'Home Player 4',
+      points: 0,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      '3pa': 0,
+      '3pm': 0, 
+    },
+    {
+      name: 'Home Player 5',
+      points: 0,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      '3pa': 0,
+      '3pm': 0, 
+    },
+  ],
+  away: [
+    {
+      name: 'Away Player 1',
+      points: 0,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      '3pa': 0,
+      '3pm': 0, 
+    },
+    {
+      name: 'Away Player 2',
+      points: 0,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      '3pa': 0,
+      '3pm': 0, 
+    },
+    {
+      name: 'Away Player 3',
+      points: 0,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      '3pa': 0,
+      '3pm': 0, 
+    },
+    {
+      name: 'Away Player 4',
+      points: 0,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      '3pa': 0,
+      '3pm': 0, 
+    },
+    {
+      name: 'Away Player 5',
+      points: 0,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      '3pa': 0,
+      '3pm': 0, 
+    },
+  ]
+}
+
 let data = {
     score: {
         home: {
             name: 'Home team',
             points: 0,
+            players: players.home
         },
         away: {
             name: 'Away team',
-            points: 0
+            points: 0,
+            players: players.away
         }
     },
     time: '15:00',
     quarter: 1
 };
 
-app.get('/api', (req, res) => {
+app.get('/total-game-stats', (req, res) => {
     res.send(data);
-})
+});
 
-const teams = {
+app.get('/players', (req, res) => {
+  res.send(players);
+});
+
+app.get('/players/:name', (req, res) => {
+  const player = [...players.home, ...players.away].find((player) => player.name === req.params.name);
+  res.send(player);
+});
+
+let teams = {
   home: {
     name: 'Home Team',
     score: 0,
@@ -69,17 +177,35 @@ function simulateGame() {
   // Calculate the outcome of a possession
   if (timeShotTaken === gameTime) {
     const possessionOutcome = Math.random();
+    const player = Math.floor(Math.random() * 5);
+    
     if (possessionOutcome < probabilities.threePointer) {
+        players[team][player].points += 3;
+        players[team][player]['3pa'] += 1;
+        players[team][player]['3pm'] += 1;
+        players[team][player]['fga'] += 1;
+        players[team][player]['fgm'] += 1;
         teams[team].score += 3;
         console.log(`${teams[team].name} made a 3-pointer during the possession!`);
     } else if (possessionOutcome < probabilities.twoPointer) {
+        players[team][player].points += 2;
+        players[team][player]['fga'] += 1;
+        players[team][player]['fgm'] += 1;
         teams[team].score += 2;
         console.log(`${teams[team].name} made a 2-pointer during the possession!`);
     } else {
         console.log(`${teams[team].name} missed the shot during the possession.`);
+        const amount = Math.floor(Math.random() * 2) + 2;
+        players[team][player]['fga'] += 1;
+
+        if (amount === 3) {
+          players[team][player]["3pa"] += 1;
+        }
+
     }
     // Simulate fouls
     if (Math.random() < probabilities.foul) {
+        players[team][Math.floor(Math.random() * 5)].fouls += 1;
         console.log('Foul called.');
     }
 
@@ -107,10 +233,12 @@ function simulateGame() {
           home: {
             name: "Home team",
             points: teams.home.score,
+            players: players.home,
           },
           away: {
             name: "Away team",
             points: teams.away.score,
+            players: players.away,
           },
         },
         time: timeString,
