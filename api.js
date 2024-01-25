@@ -1,166 +1,186 @@
 const express = require("express");
+const crypto = require("crypto");
 const app = express();
 const PORT = 3000;
 
-let players = {
-  home: [
-    {
-      name: "Home Player 1",
-      points: 0,
-      fouls: 0,
-      fgm: 0,
-      fga: 0,
-      "3pa": 0,
-      "3pm": 0,
-      fta: 0,
-      ftm: 0,
-    },
-    {
-      name: "Home Player 2",
-      points: 0,
-      fouls: 0,
-      fgm: 0,
-      fga: 0,
-      "3pa": 0,
-      "3pm": 0,
-      fta: 0,
-      ftm: 0,
-    },
-    {
-      name: "Home Player 3",
-      points: 0,
-      fouls: 0,
-      fgm: 0,
-      fga: 0,
-      "3pa": 0,
-      "3pm": 0,
-      fta: 0,
-      ftm: 0,
-    },
-    {
-      name: "Home Player 4",
-      points: 0,
-      fouls: 0,
-      fgm: 0,
-      fga: 0,
-      "3pa": 0,
-      "3pm": 0,
-      fta: 0,
-      ftm: 0,
-    },
-    {
-      name: "Home Player 5",
-      points: 0,
-      fouls: 0,
-      fgm: 0,
-      fga: 0,
-      "3pa": 0,
-      "3pm": 0,
-      fta: 0,
-      ftm: 0,
-    },
-  ],
-  away: [
-    {
-      name: "Away Player 1",
-      points: 0,
-      fouls: 0,
-      fgm: 0,
-      fga: 0,
-      "3pa": 0,
-      "3pm": 0,
-      fta: 0,
-      ftm: 0,
-    },
-    {
-      name: "Away Player 2",
-      points: 0,
-      fouls: 0,
-      fgm: 0,
-      fga: 0,
-      "3pa": 0,
-      "3pm": 0,
-      fta: 0,
-      ftm: 0,
-    },
-    {
-      name: "Away Player 3",
-      points: 0,
-      fouls: 0,
-      fgm: 0,
-      fga: 0,
-      "3pa": 0,
-      "3pm": 0,
-      fta: 0,
-      ftm: 0,
-    },
-    {
-      name: "Away Player 4",
-      points: 0,
-      fouls: 0,
-      fgm: 0,
-      fga: 0,
-      "3pa": 0,
-      "3pm": 0,
-      fta: 0,
-      ftm: 0,
-    },
-    {
-      name: "Away Player 5",
-      points: 0,
-      fouls: 0,
-      fgm: 0,
-      fga: 0,
-      "3pa": 0,
-      "3pm": 0,
-      fta: 0,
-      ftm: 0,
-    },
-  ],
-};
+let games = {};
 
-let data = {
-  home: {
-    name: "Home team",
-    points: 0,
-    players: players.home,
-    fouls: 0,
-    fgm: 0,
-    fga: 0,
-    "3pa": 0,
-    "3pm": 0,
-    fta: 0,
-    ftm: 0,
-  },
-  away: {
-    name: "Away team",
-    points: 0,
-    players: players.away,
-    fouls: 0,
-    fgm: 0,
-    fga: 0,
-    "3pa": 0,
-    "3pm": 0,
-    fta: 0,
-    ftm: 0,
-  },
-  time: "15:00",
-  quarter: 1,
-};
-
-app.get("/total-game-stats", (req, res) => {
-  res.send(data);
+app.get("/", (req, res) => {
+  res.send(games);
 });
 
-app.get("/players", (req, res) => {
-  res.send(players);
+app.get("/:id/total-game-stats", (req, res) => {
+  const stats = games[req.params.id];
+  res.send(stats);
 });
 
-app.get("/players/:name", (req, res) => {
-  const player = [...players.home, ...players.away].find(
-    (player) => player.name === req.params.name
-  );
+app.get("/:id/players", (req, res) => {
+  res.send([
+    ...games[req.params.id].home.players,
+    ...games[req.params.id].away.players,
+  ]);
+});
+
+app.get("/:id/players/:name", (req, res) => {
+  const player = [
+    ...games[req.params.id].home.players,
+    ...games[req.params.id].away.players,
+  ].find((player) => player.name === req.params.name);
   res.send(player);
+});
+
+app.post("/", (req, res) => {
+  const gameId = crypto.randomBytes(20).toString("hex");
+  let players = {
+    home: [
+      {
+        name: "Home Player 1",
+        points: 0,
+        fouls: 0,
+        fgm: 0,
+        fga: 0,
+        "3pa": 0,
+        "3pm": 0,
+        fta: 0,
+        ftm: 0,
+      },
+      {
+        name: "Home Player 2",
+        points: 0,
+        fouls: 0,
+        fgm: 0,
+        fga: 0,
+        "3pa": 0,
+        "3pm": 0,
+        fta: 0,
+        ftm: 0,
+      },
+      {
+        name: "Home Player 3",
+        points: 0,
+        fouls: 0,
+        fgm: 0,
+        fga: 0,
+        "3pa": 0,
+        "3pm": 0,
+        fta: 0,
+        ftm: 0,
+      },
+      {
+        name: "Home Player 4",
+        points: 0,
+        fouls: 0,
+        fgm: 0,
+        fga: 0,
+        "3pa": 0,
+        "3pm": 0,
+        fta: 0,
+        ftm: 0,
+      },
+      {
+        name: "Home Player 5",
+        points: 0,
+        fouls: 0,
+        fgm: 0,
+        fga: 0,
+        "3pa": 0,
+        "3pm": 0,
+        fta: 0,
+        ftm: 0,
+      },
+    ],
+    away: [
+      {
+        name: "Away Player 1",
+        points: 0,
+        fouls: 0,
+        fgm: 0,
+        fga: 0,
+        "3pa": 0,
+        "3pm": 0,
+        fta: 0,
+        ftm: 0,
+      },
+      {
+        name: "Away Player 2",
+        points: 0,
+        fouls: 0,
+        fgm: 0,
+        fga: 0,
+        "3pa": 0,
+        "3pm": 0,
+        fta: 0,
+        ftm: 0,
+      },
+      {
+        name: "Away Player 3",
+        points: 0,
+        fouls: 0,
+        fgm: 0,
+        fga: 0,
+        "3pa": 0,
+        "3pm": 0,
+        fta: 0,
+        ftm: 0,
+      },
+      {
+        name: "Away Player 4",
+        points: 0,
+        fouls: 0,
+        fgm: 0,
+        fga: 0,
+        "3pa": 0,
+        "3pm": 0,
+        fta: 0,
+        ftm: 0,
+      },
+      {
+        name: "Away Player 5",
+        points: 0,
+        fouls: 0,
+        fgm: 0,
+        fga: 0,
+        "3pa": 0,
+        "3pm": 0,
+        fta: 0,
+        ftm: 0,
+      },
+    ],
+  };
+
+  let data = {
+    home: {
+      name: "Home team",
+      points: 0,
+      players: players.home,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      "3pa": 0,
+      "3pm": 0,
+      fta: 0,
+      ftm: 0,
+    },
+    away: {
+      name: "Away team",
+      points: 0,
+      players: players.away,
+      fouls: 0,
+      fgm: 0,
+      fga: 0,
+      "3pa": 0,
+      "3pm": 0,
+      fta: 0,
+      ftm: 0,
+    },
+    time: "15:00",
+    quarter: 1,
+    gameId,
+  };
+
+  games[gameId] = data;
+  simulateGame(gameId, data, players);
+  res.send({ gameId });
 });
 
 const probabilities = {
@@ -176,7 +196,13 @@ let gameTime = 12 * 60; // 12 minutes in seconds
 let quarter = 1;
 let timeShotTaken = 0;
 
-function simulateGame() {
+function simulateGame(gameId, data, players) {
+  let splitTime = data.time.split(":");
+  let minutes = parseInt(splitTime[0]);
+  let seconds = parseInt(splitTime[1]);
+  gameTime = minutes * 60 + seconds;
+  quarter = data.quarter;
+
   if (gameTime <= 0) {
     // Quarter break
     gameTime = 12 * 60; // Reset game time to 12 minutes
@@ -286,9 +312,9 @@ function simulateGame() {
 
   data.time = timeString;
 
-  setTimeout(simulateGame, 100);
-}
+  games[gameId] = data;
 
-simulateGame();
+  setTimeout(() => simulateGame(gameId, data, players), 100);
+}
 
 app.listen(PORT);
