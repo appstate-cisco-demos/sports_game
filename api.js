@@ -9,6 +9,10 @@ app.get("/", (req, res) => {
   res.send(games);
 });
 
+app.get("/:id", (req, res) => {
+  res.send(games[req.params.id]);
+});
+
 app.get("/:id/total-game-stats", (req, res) => {
   const stats = games[req.params.id];
   res.send(stats);
@@ -179,6 +183,7 @@ app.post("/", (req, res) => {
   };
 
   games[gameId] = data;
+  console.log("simulating game");
   simulateGame(gameId, data, players);
   res.send({ gameId });
 });
@@ -316,5 +321,5 @@ function simulateGame(gameId, data, players) {
 
   setTimeout(() => simulateGame(gameId, data, players), 100);
 }
-
-app.listen(PORT);
+console.log("beginning to listen on " + PORT);
+app.listen(PORT, '0.0.0.0');
