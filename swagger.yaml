@@ -1,0 +1,165 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Game API"
+  description: "API for managing game stats and player information."
+
+host: "localhost:3000"
+schemes:
+  - "http"
+basePath: "/"
+paths:
+  /:
+    get:
+      summary: "Get all games"
+      description: "Returns a list of all games."
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "object"
+            additionalProperties:
+              $ref: "#/definitions/Game"
+    post:
+      summary: "Create a new game"
+      description: "Creates a new game with initial player stats."
+      responses:
+        200:
+          description: "Game created successfully"
+          schema:
+            type: "object"
+            properties:
+              gameId:
+                type: "string"
+  
+  /{id}/total-game-stats:
+    get:
+      summary: "Get total game stats"
+      description: "Returns the total stats for a specific game."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Game ID"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Game"
+
+  /{id}/players:
+    get:
+      summary: "Get players"
+      description: "Returns a list of players for the specified game."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Game ID"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Player"
+
+  /{id}/players/{name}:
+    get:
+      summary: "Get player by name"
+      description: "Returns details of a player with the specified name."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Game ID"
+        - name: "name"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Player name"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Player"
+
+definitions:
+  Game:
+    type: "object"
+    properties:
+      home:
+        $ref: "#/definitions/Team"
+      away:
+        $ref: "#/definitions/Team"
+      time:
+        type: "string"
+        description: "Current game time"
+      quarter:
+        type: "integer"
+        description: "Current game quarter"
+      gameId:
+        type: "string"
+
+  Team:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      points:
+        type: "integer"
+      fouls:
+        type: "integer"
+      fgm:
+        type: "integer"
+        description: "Field goals made"
+      fga:
+        type: "integer"
+        description: "Field goals attempted"
+      3pa:
+        type: "integer"
+        description: "Three-point attempts"
+      3pm:
+        type: "integer"
+        description: "Three-point makes"
+      fta:
+        type: "integer"
+        description: "Free throw attempts"
+      ftm:
+        type: "integer"
+        description: "Free throw makes"
+      players:
+        type: "array"
+        items:
+          $ref: "#/definitions/Player"
+
+  Player:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      points:
+        type: "integer"
+      fouls:
+        type: "integer"
+      fgm:
+        type: "integer"
+        description: "Field goals made"
+      fga:
+        type: "integer"
+        description: "Field goals attempted"
+      3pa:
+        type: "integer"
+        description: "Three-point attempts"
+      3pm:
+        type: "integer"
+        description: "Three-point makes"
+      fta:
+        type: "integer"
+        description: "Free throw attempts"
+      ftm:
+        type: "integer"
+        description: "Free throw makes"
